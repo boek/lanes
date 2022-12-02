@@ -6,6 +6,12 @@ type HomePageProps = {
   prs: PR[]
 }
 
+type Assignee = {
+  id: number
+  login: string
+  avatar_url: string
+}
+
 type Label = {
   id: number
   url: string
@@ -17,9 +23,10 @@ type Label = {
 type PR = {
   id: number
   number: number
-  url: string
+  "html_url": string
   title: string
   labels: Label[]
+  assignee: Assignee | undefined
 }
 
 const LabelBadge = (label: Label) => {
@@ -47,13 +54,23 @@ const Column: React.FC<{ title : string, prs: PR[] }> = ({ title, prs }) => {
   )
 }
 
+const AssigneeLabel: React.FC<{ assignee : Assignee }> = ({ assignee })=> {
+  return (
+    <img
+      className="h-8 w-8 rounded-full border-2 absolute top-0 right-0"
+      src={assignee.avatar_url}
+    />
+  )
+}
+
 const Card = (pr: PR) => {
   return (
     <a
-      className="flex max-w-xs flex-col gap-2 rounded-xl bg-white/10 p-2 text-white hover:bg-white/20 mb-2"
-      href={pr.url}
+      className="flex max-w-xs flex-col gap-2 rounded-xl bg-white/10 p-2 text-white hover:bg-white/20 mb-2 relative"
+      href={pr["html_url"]}
       key={pr.id}
     >
+      { pr.assignee && <AssigneeLabel assignee={pr.assignee} /> }
       <h3 className="text-sm font-bold">#{pr.number}</h3>
       <div className="text-xs">
         {pr.title}
